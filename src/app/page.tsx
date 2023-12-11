@@ -1,45 +1,46 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../../services/api";
+import { error } from "console";
 
-const initialItens = [
-  { id: 1, nome: "Banana" },
-  { id: 2, nome: "Uva" },
-];
+interface Product {
+  id: number;
+  nome: string;
+}
 
 export default function Home() {
-  const [itens, setItens] = useState(initialItens);
+  const [items, setItens] = useState<Product[]>([]);
   const [textIpunt, setTextIpunt] = useState("");
+  const [loaading, setloading] = useState(false);
+  useEffect(() => {
+    loadItems();
+  }, []);
 
   async function handleAddItem() {
     console.log(textIpunt);
     const data = { nome: textIpunt };
     try {
-      const response = await fetch("http://192.168.68.154:3000/produtos", {
-        method: "POST", // or 'PUT'
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-      console.log("Success:", result);
+      await api.post("/produtos", data);
+      console.log("sucessss");
     } catch (error) {
-      console.error("Error:", error);
-      alert("ocorreu um erro");
+      console.log("error", error);
     }
   }
+  function handleDeleteItem(itemId: number) {
+    console.log(itemId);
+  }
 
-  async function handleClick() {
-    const response = await api.get("/produtos");
-    console.log(response);
-    setItens(response.data);
-
-    //const response = await fetch("http://192.168.68.154:3000/produtos");
-    // const produtos = await response.json();
-    // setItens(produtos);
-    // console.log(produtos);
+  async function loadItems() {
+    setloading(true);
+    try {
+      const response = await api.get("/produtos");
+      console.log(response);
+      setItens(response.data);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setloading(false);
+    }
   }
 
   return (
@@ -51,11 +52,14 @@ export default function Home() {
         ></input>
         <button onClick={handleAddItem}>enviar</button>
       </div>
-      <button onClick={handleClick}>Buscar informação no servidor</button>
+      <span> {loaading && "carregando"} </span>
 
       <ul>
-        {itens.map((item) => (
-          <li key={item.id}>{item.nome}</li>
+        {items.map((item) => (
+          <li key={item.id}>
+            {item.nome}
+            <button onClick={() => handleDeleteItem(item.id)}>delete </button>
+          </li>
         ))}
       </ul>
     </main>
