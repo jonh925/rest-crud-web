@@ -3,23 +3,27 @@ import { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { error } from "console";
 
+// Definindo a estrutura de um produto
 interface Product {
   id: number;
   nome: string;
 }
 
 export default function Home() {
+  // Variáveis de estado para gerenciar itens, entrada de texto, estado de carregamento e erros
   const [items, setItens] = useState<Product[]>([]);
   const [textIpunt, setTextIpunt] = useState("");
   const [loaading, setloading] = useState(false);
+  // hook useEffect para carregar itens quando o componente é montado
   useEffect(() => {
     loadItems();
   }, []);
-
+// Função para lidar com a adição de um novo item
   async function handleAddItem() {
     console.log(textIpunt);
     const data = { nome: textIpunt };
     try {
+      // Fazendo uma requisição POST para adicionar um novo item
       await api.post("/produtos", data);
       console.log("sucessss");
     } catch (error) {
