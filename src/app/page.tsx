@@ -30,13 +30,15 @@ export default function Home() {
       console.log("error", error);
     }
   }
+  // Função para lidar com a exclusão de um item (ainda falta a logica)
   function handleDeleteItem(itemId: number) {
     console.log(itemId);
   }
-
+  // Função para carregar itens do servidor
   async function loadItems() {
     setloading(true);
     try {
+       // Fazendo uma requisição GET para buscar itens
       const response = await api.get("/produtos");
       console.log(response);
       setItens(response.data);
